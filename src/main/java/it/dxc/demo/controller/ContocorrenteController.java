@@ -22,29 +22,29 @@ public class ContocorrenteController {
 	@Autowired
 	private ContocorrenteService serviceC;
 
-	@PostMapping (path ="/conto/registra", produces = "application/json")
-	public Contocorrente registraNuovoConto (@RequestParam double saldo, Integer idIntestatario, Integer idCointestatario) {
+	@PostMapping (path ="/registra", produces = "application/json")
+	public Contocorrente registraNuovoConto (@RequestParam Double saldo, @RequestParam Integer idIntestatario, Integer idCointestatario) {
 		return serviceC.registraNuovoConto(saldo, idIntestatario, idCointestatario);
 
 	}
 
-	@PostMapping(path="/addProprietario",produces = "application/json")
-	public Utente registraUtente(@PathVariable Integer idUtente,@PathVariable Integer idContocorrente) {
+	@PutMapping(path="/addProprietario",produces = "application/json")
+	public Utente registraUtente(@RequestParam Integer idUtente,@RequestParam Integer idContocorrente) {
 		return serviceC.registraUtente(idUtente, idContocorrente);
 	}
 
 	//Leggo i dati dei movimenti del mese corrente
-	@GetMapping(path="/ultimiMovSaldo",consumes = "application/json")
+	@GetMapping(path="/ultimiMovSaldo/{numeroConto}",consumes = "application/json")
 	public ContoCorrMovDTO getUltimiMovimentiSaldo(@PathVariable Integer numeroConto){
 		return serviceC.leggiUltimiMovSaldoConto(numeroConto);
 	}
 	
-	@GetMapping(path="/valido")
-	public boolean controllaValido(@RequestParam Integer idContocorrente) {
+	@GetMapping(path="/valido/{idContocorrente}")
+	public boolean controllaValido(@PathVariable Integer idContocorrente) {
 		return serviceC.controlla(idContocorrente);
 	}
 	
-	@PutMapping(path="/addMovimento",produces = "application/json")
+	@PostMapping(path="/addMovimento",produces = "application/json")
 	public Contocorrente effettuaMovimento(@RequestParam Integer numeroConto,@RequestParam Integer idOperatore,@RequestParam Double nuovoSaldo) {
 		return serviceC.modificaSaldo(numeroConto,nuovoSaldo,idOperatore);
 	}

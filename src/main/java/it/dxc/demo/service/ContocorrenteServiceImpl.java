@@ -32,26 +32,28 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 	private MovimentoInstantRepository movimentoDAO;
 
 	@Override
-	public Contocorrente registraNuovoConto(double saldo, int idIntestatario, int  idCointestatario) {
+	public Contocorrente registraNuovoConto(Double saldo, Integer idIntestatario, Integer idCointestatario) {
 
+		Contocorrente c=null;
 		Optional<Utente> o=utenteDAO.findById(idIntestatario);
 		if(o.isEmpty()) {
 			throw new RuntimeException("Utente con id "+ idIntestatario+ " inesistente");
 		}
 		Utente u=o.get();
-
-		Optional<Utente> o2=utenteDAO.findById(idCointestatario);
-		if(o2.isEmpty()) {
-			Contocorrente c = new Contocorrente(saldo, new Date(), u);
+		
+		if(idCointestatario==null) {
+			c = new Contocorrente(saldo, new Date(), u);
 			contocorrenteDAO.save(c);
-			return c;
-		}
-		else {
+			
+		}else {
+			Optional<Utente> o2=utenteDAO.findById(idCointestatario);
 			Utente uc = o2.get();
-			Contocorrente c = new Contocorrente(saldo, new Date(), u, uc);
+			c = new Contocorrente(saldo, new Date(), u, uc);
 			contocorrenteDAO.save(c);
-			return c;
-		} 
+		}
+		
+		modificaSaldo(c.getNumeroConto(), saldo, idIntestatario);
+		return c;
 	}
 
 
@@ -68,7 +70,13 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 		Utente u=o.get();
 		Contocorrente c=o2.get();
 		
-		c.setProprietario(u);
+		if(c.getCoIntestatario()!=null )
+			throw new RuntimeException("Numero massimo di proprietari raggiunto!!");
+			
+		if(c.getProprietario().getIdUtente()==idUtente)
+			throw new RuntimeException("proprietario gria inserito!!");
+		
+		c.setCoIntestatario(u);
 		return u;
 	}
 
@@ -114,7 +122,16 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 		List<Integer> listaUtenti=movimentoDAO.findUtentiByIdcontocorrente(idContocorrente);
 		
 		if(listaUtenti.size()!=0) {
-			if(c.getSaldo()!=contocorrenteDAO.getSaldoComplessivoMovimenti(idContocorrente)){
+			Double n=contocorrenteDAO.getSaldoComplessivoMovimentiVersamenti(idContocorrente);
+			Double n2=contocorrenteDAO.getSaldoComplessivoMovimentiPrelievo(idContocorrente);
+			if(n==null) {
+				n=(double) 0;
+			}
+			if(n2==null) {
+				n2=(double) 0;
+			}
+			
+			if(c.getSaldo()!=n-n2){
 				throw new RuntimeException("Saldo diverso!!");
 			}
 		
@@ -175,12 +192,14 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 		Movimento movimento = new Movimento();
 		
 		Utente u=utenteDAO.findById(idUtenteOperatore).orElse(null);
+		movimento.setIdMovimento(null);
 		movimento.setImporto(Math.abs(differenza));
 		movimento.setTipo(differenza < 0 ? TipoMovimento.PRELIEVO : TipoMovimento.VERSAMENTO);
 		movimento.setOperatore(u);
 		movimento.setDataOperazione(new Date());
 		conto.addMovimenti(movimento);
-	
+		movimentoDAO.save(movimento);
+		
 		// Se il nuovo saldo Ã¨ negativo, calcola e applica la mora
 		if (nuovoSaldo < 0) {
 			double mora = calcolaMora(nuovoSaldo, saldoCorrente);
@@ -193,11 +212,12 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 				movimentoMora.setOperatore(u);
 				movimentoMora.setDataOperazione(new Date());
 				conto.addMovimenti(movimentoMora);
+				movimentoDAO.save(movimentoMora);
 			}
 		}
 	
 		conto.setSaldo(nuovoSaldo);
-		
+		System.out.println(conto);
 		return conto;
 	}
 	

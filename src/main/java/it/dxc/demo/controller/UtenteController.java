@@ -52,7 +52,7 @@ public class UtenteController {
 		return serviceU.getListaUtentiByName(nome);
 	}
 	
-	@DeleteMapping("/del/{idutente}")
+	@DeleteMapping("/del/{idUtente}")
 	public boolean delUtente(@PathVariable Integer idUtente) {
 		
 		return serviceU.cancellazioneUtente(idUtente);
