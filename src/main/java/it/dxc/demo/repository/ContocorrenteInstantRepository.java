@@ -18,9 +18,13 @@ public interface ContocorrenteInstantRepository extends JpaRepository<Contocorre
 			+"WHERE fk_utente_co = :idUtente OR fk_utente_proprietario = :idUtente")
 	public Double getSaldoComplessivo(int idUtente);
 	
+	@Query(nativeQuery = true,value="SELECT SUM(m.importo)" 
+			+"FROM contocorrenti c inner join movimenti m on c.numero_conto=m.fk_contocorrente "
+			+"WHERE m.fk_contocorrente = :idContocorrente and m.tipo='VERSAMENTO'")
+	public Double getSaldoComplessivoMovimentiVersamenti(int idContocorrente);
+	
 	@Query(nativeQuery = true,value="SELECT SUM(m.importo) " 
 			+"FROM contocorrenti c inner join movimenti m on c.numero_conto=m.fk_contocorrente "
-			+"WHERE m.fk_contocorrente = :idContocorrente")
-	public Double getSaldoComplessivoMovimenti(int idContocorrente);
-	
+			+"WHERE m.fk_contocorrente = :idContocorrente and m.tipo='PRELIEVO'")
+	public Double getSaldoComplessivoMovimentiPrelievo(int idContocorrente);
 }

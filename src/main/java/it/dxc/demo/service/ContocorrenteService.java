@@ -8,8 +8,10 @@ import it.dxc.demo.entity.Movimento;
 import it.dxc.demo.entity.Utente;
 
 public interface ContocorrenteService {
-	public Contocorrente registraNuovoConto(double saldo, int idIntestatario, int idCointestatario);
-	public Utente registraUtente(int idCointestatario,int idContocorrente);
+
+	public Contocorrente registraNuovoConto(Double saldo,Integer idIntestatario, Integer idCointestatario);
+	public Utente registraUtente(int idUtente,int idContocorrente);
+
 	public double leggiSaldoConto(int numeroConto);
 	public List<Movimento> leggiUltimiMovimentiConto(int numeroConto);
 	public ContoCorrMovDTO leggiUltimiMovSaldoConto(int numeroConto);
