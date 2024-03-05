@@ -44,7 +44,7 @@ public class UtenteServiceImpl implements UtenteService {
 	}
 
 	@Override
-	public Utente modificaUtente(Utente utente,Indirizzo indirizzo) {
+	public Utente modificaUtente(Utente utente) {
 		Optional<Utente> o=utenteDAO.findById(utente.getIdUtente());
 
 		if(o.isEmpty()) 
@@ -55,7 +55,7 @@ public class UtenteServiceImpl implements UtenteService {
 		u.setCognome(utente.getCognome());
 		u.setMail(utente.getMail());
 		u.setTelefono(utente.getTelefono());
-		u.setResidenza(indirizzo);
+		u.setResidenza(utente.getResidenza());
 
 		return u;
 	}
