@@ -28,14 +28,10 @@ public class ContocorrenteController {
 	}
 
 	@PostMapping(path="/addProprietario")
-	public Utente registraUtente(@RequestParam Integer idUtente,@RequestParam Integer idContocorrente) {
-		return serviceC.registraUtente(idUtente, idContocorrente);
+	public Utente registraUtente(@RequestParam Integer idCointestatario,@RequestParam Integer idContocorrente) {
+		return serviceC.registraUtente(idCointestatario, idContocorrente);
 	}
 	
-	@PostMapping(path="/addProprietarioCointestatario")
-	public Utente registraUtente(@RequestParam Integer idProprietario, @RequestParam Integer idCointestatario, @RequestParam Integer idContocorrente) {
-		return serviceC.registraUtente(idProprietario,idCointestatario, idContocorrente);
-	}
 
 	//Leggo i dati dei movimenti del mese corrente
 	@GetMapping(path="/ultimiMovSaldo")
