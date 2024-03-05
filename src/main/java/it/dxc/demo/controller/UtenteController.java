@@ -30,10 +30,10 @@ public class UtenteController {
 	/*Si potrebbe  anche non mettere pathVariable, poichè è indifferente, ma aiuta nello sviluppo del frontend. 
 	perchè cosi posso scegliere quale utente modificare
 	*/
-	@PutMapping(path = "/change/:idutente",produces = "application/json",consumes = "application/json")
-	public Utente modificaUtente(@RequestBody Utente utente, @PathVariable Integer idutente, @RequestBody Indirizzo indirizzo) {
+	@PutMapping(path = "/change/{idUtente}",produces = "application/json",consumes = "application/json")
+	public Utente modificaUtente(@RequestBody Utente utente, @PathVariable Integer idUtente) {
 		
-		return serviceU.modificaUtente(utente, indirizzo);
+		return serviceU.modificaUtente(utente,idUtente);
 	}
 	
 	@GetMapping(path = "/get",produces="application/json")
@@ -42,7 +42,7 @@ public class UtenteController {
 		return serviceU.letturaDatiBase(idUtente);
 	}
 	
-	@GetMapping(path = "/getSalienti",produces = "application/json")
+	@GetMapping(path = "/getSalienti/{idUtente}",produces = "application/json")
 	public UtenteSalientiDTO getUtenteSalienti(@PathVariable Integer idUtente) {
 		
 		return serviceU.letturaDatiSalienti(idUtente);
@@ -52,7 +52,7 @@ public class UtenteController {
 		return serviceU.getListaUtentiByName(nome);
 	}
 	
-	@DeleteMapping("/del/:idutente")
+	@DeleteMapping("/del/{idutente}")
 	public boolean delUtente(@PathVariable Integer idUtente) {
 		
 		return serviceU.cancellazioneUtente(idUtente);
