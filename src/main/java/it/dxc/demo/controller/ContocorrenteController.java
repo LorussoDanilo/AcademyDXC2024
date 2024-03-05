@@ -22,18 +22,22 @@ public class ContocorrenteController {
 	@Autowired
 	private ContocorrenteService serviceC;
 
+
 	@PostMapping (path ="/registra", produces = "application/json")
 	public Contocorrente registraNuovoConto (@RequestParam Double saldo, @RequestParam Integer idIntestatario, Integer idCointestatario) {
-		return serviceC.registraNuovoConto(saldo, idIntestatario, idCointestatario);
 
+		return serviceC.registraNuovoConto(saldo, idIntestatario, idCointestatario);
 	}
+
 
 	@PutMapping(path="/addProprietario",produces = "application/json")
 	public Utente registraUtente(@RequestParam Integer idUtente,@RequestParam Integer idContocorrente) {
 		return serviceC.registraUtente(idUtente, idContocorrente);
 	}
+	
 
 	//Leggo i dati dei movimenti del mese corrente
+
 	@GetMapping(path="/ultimiMovSaldo/{numeroConto}",consumes = "application/json")
 	public ContoCorrMovDTO getUltimiMovimentiSaldo(@PathVariable Integer numeroConto){
 		return serviceC.leggiUltimiMovSaldoConto(numeroConto);
@@ -44,6 +48,7 @@ public class ContocorrenteController {
 		return serviceC.controlla(idContocorrente);
 	}
 	
+
 	@PostMapping(path="/addMovimento",produces = "application/json")
 	public Contocorrente effettuaMovimento(@RequestParam Integer numeroConto,@RequestParam Integer idOperatore,@RequestParam Double nuovoSaldo) {
 		return serviceC.modificaSaldo(numeroConto,nuovoSaldo,idOperatore);
