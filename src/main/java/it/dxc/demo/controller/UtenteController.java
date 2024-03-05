@@ -36,13 +36,13 @@ public class UtenteController {
 		return serviceU.modificaUtente(utente,idUtente);
 	}
 	
-	@GetMapping(path = "/get",produces="application/json")
+	@GetMapping(path = "/get/{idUtente}",produces="application/json")
 	public Utente getUtente(@PathVariable Integer idUtente) {
 		
 		return serviceU.letturaDatiBase(idUtente);
 	}
 	
-	@GetMapping(path = "/getSalienti",produces = "application/json")
+	@GetMapping(path = "/getSalienti/{idUtente}",produces = "application/json")
 	public UtenteSalientiDTO getUtenteSalienti(@PathVariable Integer idUtente) {
 		
 		return serviceU.letturaDatiSalienti(idUtente);
@@ -52,7 +52,7 @@ public class UtenteController {
 		return serviceU.getListaUtentiByName(nome);
 	}
 	
-	@DeleteMapping("/del/:idutente")
+	@DeleteMapping("/del/{idutente}")
 	public boolean delUtente(@PathVariable Integer idUtente) {
 		
 		return serviceU.cancellazioneUtente(idUtente);
