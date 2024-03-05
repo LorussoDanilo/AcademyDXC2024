@@ -34,7 +34,7 @@ public class ContocorrenteController {
 	
 
 	//Leggo i dati dei movimenti del mese corrente
-	@GetMapping(path="/ultimiMovSaldo")
+	@GetMapping(path="/ultimiMovSaldo/{numeroConto}")
 	public ContoCorrMovDTO getUltimiMovimentiSaldo(@PathVariable Integer numeroConto){
 		return serviceC.leggiUltimiMovSaldoConto(numeroConto);
 	}
