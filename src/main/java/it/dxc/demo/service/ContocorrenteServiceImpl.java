@@ -203,7 +203,7 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 		movimento.setDataOperazione(new Date());
 		conto.addMovimenti(movimento);
 
-		movimentoDAO.save(movimento);
+//		movimentoDAO.save(movimento);
 
 		// Se il nuovo saldo Ã¨ negativo, calcola e applica la mora
 		if (nuovoSaldo < 0) {
@@ -217,7 +217,7 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 				movimentoMora.setOperatore(u);
 				movimentoMora.setDataOperazione(new Date());
 				conto.addMovimenti(movimentoMora);
-				movimentoDAO.save(movimentoMora);
+//				movimentoDAO.save(movimentoMora);
 			}
 		}
 
