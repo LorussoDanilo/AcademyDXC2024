@@ -44,8 +44,8 @@ public class UtenteServiceImpl implements UtenteService {
 	}
 
 	@Override
-	public Utente modificaUtente(Utente utente) {
-		Optional<Utente> o=utenteDAO.findById(utente.getIdUtente());
+	public Utente modificaUtente(Utente utente,Integer idUtente) {
+		Optional<Utente> o=utenteDAO.findById(idUtente);
 
 		if(o.isEmpty()) 
 			throw new RuntimeException("Utente non esistente!!");

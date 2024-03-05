@@ -10,7 +10,7 @@ import it.dxc.demo.entity.Utente;
 public interface UtenteService {
 	public Utente creaUtente(Utente utente, Indirizzo indirizzo);
 	
-	public Utente modificaUtente(Utente utente);
+	public Utente modificaUtente(Utente utente,Integer idUtente);
 	
 	public Utente letturaDatiBase(int idUtente);
 	
