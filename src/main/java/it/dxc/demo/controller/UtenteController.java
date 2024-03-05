@@ -36,7 +36,7 @@ public class UtenteController {
 		return serviceU.modificaUtente(utente,idUtente);
 	}
 	
-	@GetMapping(path = "/get",produces="application/json")
+	@GetMapping(path = "/get/{idUtente}",produces="application/json")
 	public Utente getUtente(@PathVariable Integer idUtente) {
 		
 		return serviceU.letturaDatiBase(idUtente);
