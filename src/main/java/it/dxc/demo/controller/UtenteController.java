@@ -30,10 +30,10 @@ public class UtenteController {
 	/*Si potrebbe  anche non mettere pathVariable, poichè è indifferente, ma aiuta nello sviluppo del frontend. 
 	perchè cosi posso scegliere quale utente modificare
 	*/
-	@PutMapping(path = "/change/{idutente}",produces = "application/json",consumes = "application/json")
-	public Utente modificaUtente(@RequestBody Utente utente, @PathVariable Integer idutente) {
+	@PutMapping(path = "/change/{idUtente}",produces = "application/json",consumes = "application/json")
+	public Utente modificaUtente(@RequestBody Utente utente, @PathVariable Integer idUtente) {
 		
-		return serviceU.modificaUtente(utente);
+		return serviceU.modificaUtente(utente,idUtente);
 	}
 	
 	@GetMapping(path = "/get",produces="application/json")
