@@ -56,8 +56,8 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 
 
 	@Override
-	public Utente registraUtente(int idUtente,int idContocorrente) {
-		Optional<Utente> o=utenteDAO.findById(idUtente);
+	public Utente registraUtente(int idProprietario,int idContocorrente) {
+		Optional<Utente> o=utenteDAO.findById(idProprietario);
 		Optional<Contocorrente> o2=contocorrenteDAO.findById(idContocorrente);
 
 		if(o.isEmpty()) 
@@ -67,6 +67,25 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 
 		Utente u=o.get();
 		Contocorrente c=o2.get();
+		
+		c.setProprietario(u);
+		return u;
+	}
+	
+	@Override
+	public Utente registraUtente(int idProprietario, int idCointestatario,int idContocorrente) {
+		Optional<Utente> o=utenteDAO.findById(idProprietario);
+		Optional<Utente> o2=utenteDAO.findById(idCointestatario);
+
+		Optional<Contocorrente> oc=contocorrenteDAO.findById(idContocorrente);
+
+		if(o.isEmpty()) 
+			throw new RuntimeException("Utente non esistente!!");
+		if(o2.isEmpty())
+			throw new RuntimeException("Contocorrente non esistente!!");
+
+		Utente u=o.get();
+		Contocorrente c=oc.get();
 		
 		c.setProprietario(u);
 		return u;
