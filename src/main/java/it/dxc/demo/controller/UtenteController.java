@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import it.dxc.demo.dto.UtenteDTO;
 import it.dxc.demo.dto.UtenteSalientiDTO;
 import it.dxc.demo.dto.UtentiDTO;
 
@@ -24,20 +26,20 @@ public class UtenteController {
 	 * Per esempio può essere usato per l'invio di un pdf
 	 */
 	@PostMapping(path = "/new")
-	public Utente creaUtente(@RequestBody Utente utente) {
+	public UtenteDTO creaUtente(@RequestBody Utente utente) {
 		return serviceU.creaUtente(utente, utente.getResidenza());
 	}
 	/*Si potrebbe  anche non mettere pathVariable, poichè è indifferente, ma aiuta nello sviluppo del frontend. 
 	perchè cosi posso scegliere quale utente modificare
 	*/
-	@PutMapping(path = "/change/:idutente",produces = "application/json",consumes = "application/json")
-	public Utente modificaUtente(@RequestBody Utente utente, @PathVariable Integer idutente, @RequestBody Indirizzo indirizzo) {
-		
-		return serviceU.modificaUtente(utente, indirizzo);
+	
+	@PutMapping(path = "/change",produces = "application/json",consumes = "application/json")
+	public UtenteDTO modificaUtente(@RequestBody Utente utente) {
+		return serviceU.modificaUtente(utente);
 	}
 	
-	@GetMapping(path = "/get",produces="application/json")
-	public Utente getUtente(@PathVariable Integer idUtente) {
+	@GetMapping(path = "/get/{idUtente}",produces="application/json")
+	public UtenteDTO getUtente(@PathVariable Integer idUtente) {
 		
 		return serviceU.letturaDatiBase(idUtente);
 	}
@@ -48,11 +50,11 @@ public class UtenteController {
 		return serviceU.letturaDatiSalienti(idUtente);
 	}
 	@GetMapping("/utentibyname")
-	public List<Utente>  getListaUtentiByName(@RequestParam String nome){
+	public List<UtenteDTO>  getListaUtentiByName(@RequestParam String nome){
 		return serviceU.getListaUtentiByName(nome);
 	}
 	
-	@DeleteMapping("/del/:idutente")
+	@DeleteMapping("/del/{idutente}")
 	public boolean delUtente(@PathVariable Integer idUtente) {
 		
 		return serviceU.cancellazioneUtente(idUtente);

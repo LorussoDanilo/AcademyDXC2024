@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.dxc.demo.dto.ContoCorrMovDTO;
+import it.dxc.demo.dto.ContocorrenteDTO;
+import it.dxc.demo.dto.UtenteDTO;
 import it.dxc.demo.entity.Contocorrente;
 import it.dxc.demo.entity.Utente;
 import it.dxc.demo.service.ContocorrenteService;
@@ -22,14 +24,14 @@ public class ContocorrenteController {
 	@Autowired
 	private ContocorrenteService serviceC;
 
-	@PostMapping (path ="/conto/registra", produces = "application/json")
-	public Contocorrente registraNuovoConto (@RequestParam double saldo, Integer idIntestatario, Integer idCointestatario) {
+	@PostMapping (path ="/registra")
+	public ContocorrenteDTO registraNuovoConto (@RequestParam double saldo, Integer idIntestatario, Integer idCointestatario) {
 		return serviceC.registraNuovoConto(saldo, idIntestatario, idCointestatario);
 
 	}
-
+	//A che serve?
 	@PostMapping(path="/addProprietario",produces = "application/json")
-	public Utente registraUtente(@PathVariable Integer idUtente,@PathVariable Integer idContocorrente) {
+	public UtenteDTO registraUtente(@RequestParam Integer idUtente, Integer idContocorrente) {
 		return serviceC.registraUtente(idUtente, idContocorrente);
 	}
 
@@ -45,7 +47,7 @@ public class ContocorrenteController {
 	}
 	
 	@PutMapping(path="/addMovimento",produces = "application/json")
-	public Contocorrente effettuaMovimento(@RequestParam Integer numeroConto,@RequestParam Integer idOperatore,@RequestParam Double nuovoSaldo) {
+	public ContocorrenteDTO effettuaMovimento(@RequestParam Integer numeroConto,Integer idOperatore, Double nuovoSaldo) {
 		return serviceC.modificaSaldo(numeroConto,nuovoSaldo,idOperatore);
 	}
 	
