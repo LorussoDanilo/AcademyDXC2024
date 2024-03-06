@@ -14,7 +14,6 @@ import it.dxc.demo.dto.ContocorrenteReportDTO;
 import it.dxc.demo.dto.ReportDTO;
 import it.dxc.demo.dto.UtenteDTO;
 import it.dxc.demo.entity.Contocorrente;
-import it.dxc.demo.entity.Indirizzo;
 import it.dxc.demo.entity.Movimento;
 import it.dxc.demo.entity.TipoMovimento;
 import it.dxc.demo.entity.Utente;
@@ -255,7 +254,32 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 
 		return true;
 	}
+	
+	@Override
+    public ContoCorrMovDTO sganciaCointestatario(int numeroConto, int idCointestatario) {
+        //Recupero il conto corrente
+        Contocorrente conto = contocorrenteDAO.findById(numeroConto)
+                .orElseThrow(() -> new RuntimeException("Contocorrente non esistente"));
 
+        //Verifico se il cointestatario ha effettuato movimenti
+        List<Integer> utentiMovimenti = movimentoDAO.findUtentiByIdcontocorrente(numeroConto);
+        if (utentiMovimenti.contains(idCointestatario)) {
+            throw new RuntimeException("Il cointestatario ha effettuato movimenti sul conto e non può essere sganciato");
+        }
+
+        //Sgancio il cointestatario se non ha effettuato movimenti
+		if (conto.getCoIntestatario() != null && conto.getCoIntestatario().getIdUtente() == idCointestatario) {
+			conto.setCoIntestatario(null);
+			contocorrenteDAO.save(conto);
+		} else {
+			throw new RuntimeException("L'utente specificato non è il cointestatario o è già stato sganciato");
+		}
+
+		//DTO con le informazioni aggiornate del conto
+		ContoCorrMovDTO contoCorrMovDTO = new ContoCorrMovDTO(conto.getNumeroConto(), conto.getMovimenti(), conto.getSaldo());
+
+    	return contoCorrMovDTO;
+    }
 
 	@Override
 	public ContoCorrMovDTO leggiDatiSalientiConto(Integer numeroConto) {
