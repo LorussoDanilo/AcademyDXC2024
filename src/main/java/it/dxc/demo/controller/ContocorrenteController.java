@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import it.dxc.demo.dto.ContoCorrMovDTO;
 import it.dxc.demo.dto.ContocorrenteDTO;
+import it.dxc.demo.dto.ReportDTO;
 import it.dxc.demo.dto.UtenteDTO;
 import it.dxc.demo.service.ContocorrenteService;
 
@@ -23,7 +24,7 @@ public class ContocorrenteController {
 	private ContocorrenteService serviceC;
 
 	@PostMapping (path ="/registra")
-	public ContocorrenteDTO registraNuovoConto (@RequestParam Double saldo,@RequestParam Integer idIntestatario,@RequestParam Integer idCointestatario) {
+	public ContocorrenteDTO registraNuovoConto (@RequestParam Double saldo,@RequestParam Integer idIntestatario,Integer idCointestatario) {
 		return serviceC.registraNuovoConto(saldo, idIntestatario, idCointestatario);
 	}
 
@@ -52,11 +53,18 @@ public class ContocorrenteController {
 		return serviceC.modificaSaldo(numeroConto,nuovoSaldo,idOperatore);
 	}
 	
-	@DeleteMapping(path="/del")
-	public boolean rimuoviConto(@RequestParam Integer numeroConto) {
+	@DeleteMapping(path="/del{numeroConto}")
+	public boolean rimuoviConto(@PathVariable Integer numeroConto) {
 		return serviceC.eliminaConto(numeroConto);
 	}
 
-
-
+	@GetMapping(path="/datiSalienti/{numeroConto}")
+	public ContoCorrMovDTO datiSalientiConto(@PathVariable Integer numeroConto) {
+		return serviceC.leggiDatiSalientiConto(numeroConto);
+	}
+	
+	@GetMapping(path="/report")
+	public ReportDTO report() {
+		return serviceC.report();
+	}
 }

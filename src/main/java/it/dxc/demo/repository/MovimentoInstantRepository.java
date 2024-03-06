@@ -9,7 +9,7 @@ import it.dxc.demo.entity.Movimento;
 
 public interface MovimentoInstantRepository extends JpaRepository<Movimento, Integer>{
 	
-	@Query(nativeQuery = true, value="SELECT m.* FROM movimenti m WHERE MONTH(m.data_operazione) =  MONTH(now())")
+	@Query(nativeQuery = true, value="SELECT m.* FROM movimenti m WHERE MONTH(m.data_operazione) =  MONTH(now()) and fk_contocorrente=:numeroConto")
 	public List<Movimento> getMovimenti(int numeroConto);
 	
 	@Query(nativeQuery = true,value="SELECT u.id_utente "
@@ -22,4 +22,9 @@ public interface MovimentoInstantRepository extends JpaRepository<Movimento, Int
 			+"WHERE fk_contocorrente=:idContocorrente")
 	public List<Movimento> findAllByFk_contocorrente(int idContocorrente);
 
+	@Query(nativeQuery = true,value="SELECT COUNT(*) "
+			+"FROM movimenti "
+			+"WHERE fk_contocorrente=:idContocorrente")
+	public Integer sommaMovimenti(int idContocorrente);
+	
 }
