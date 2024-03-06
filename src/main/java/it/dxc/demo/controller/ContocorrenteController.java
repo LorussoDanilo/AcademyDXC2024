@@ -53,7 +53,7 @@ public class ContocorrenteController {
 	}
 	
 	@DeleteMapping(path="/del")
-	public boolean rimuoviConto(@RequestParam Integer numeroConto) {
+	public boolean rimuoviConto(@PathVariable Integer numeroConto) {
 		return serviceC.eliminaConto(numeroConto);
 	}
 
