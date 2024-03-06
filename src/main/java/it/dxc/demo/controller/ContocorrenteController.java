@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import it.dxc.demo.dto.ContoCorrMovDTO;
 import it.dxc.demo.dto.ContocorrenteDTO;
 import it.dxc.demo.dto.UtenteDTO;
-import it.dxc.demo.entity.Contocorrente;
-import it.dxc.demo.entity.Utente;
 import it.dxc.demo.service.ContocorrenteService;
 
 @RestController
@@ -27,6 +25,7 @@ public class ContocorrenteController {
 	@PostMapping (path ="/registra")
 	public ContocorrenteDTO registraNuovoConto (@RequestParam Double saldo,@RequestParam Integer idIntestatario,@RequestParam Integer idCointestatario) {
 		return serviceC.registraNuovoConto(saldo, idIntestatario, idCointestatario);
+	}
 
 	//A che serve?
 	@PutMapping(path="/addProprietario",produces = "application/json")

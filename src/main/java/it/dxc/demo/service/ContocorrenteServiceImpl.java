@@ -62,7 +62,7 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 
 
 	@Override
-	public UtenteDTO registraUtente(int idUtente,int idContocorrente) {
+	public UtenteDTO registraUtente(Integer idUtente,Integer idContocorrente) {
 		Optional<Utente> o=utenteDAO.findById(idUtente);
 
 		Optional<Contocorrente> o2=contocorrenteDAO.findById(idContocorrente);
@@ -83,7 +83,7 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 		if(c.getCoIntestatario()!=null )
 			throw new RuntimeException("Numero massimo di proprietari raggiunto!!");
 
-		if(c.getProprietario().getIdUtente()==idCointestatario)
+		if(c.getProprietario().getIdUtente()==idUtente)
 			throw new RuntimeException("proprietario gria inserito!!");
 
 		c.setCoIntestatario(u);
