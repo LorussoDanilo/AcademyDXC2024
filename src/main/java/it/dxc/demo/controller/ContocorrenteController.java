@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.dxc.demo.dto.ContoCorrMovDTO;
-import it.dxc.demo.entity.Contocorrente;
-import it.dxc.demo.entity.Utente;
+import it.dxc.demo.dto.ContocorrenteDTO;
+import it.dxc.demo.dto.UtenteDTO;
 import it.dxc.demo.service.ContocorrenteService;
 
 @RestController
@@ -22,35 +22,38 @@ public class ContocorrenteController {
 	@Autowired
 	private ContocorrenteService serviceC;
 
-	@PostMapping (path ="/conto/registra", produces = "application/json")
-	public Contocorrente registraNuovoConto (@RequestParam double saldo, Integer idIntestatario, Integer idCointestatario) {
+	@PostMapping (path ="/registra")
+	public ContocorrenteDTO registraNuovoConto (@RequestParam Double saldo,@RequestParam Integer idIntestatario,@RequestParam Integer idCointestatario) {
 		return serviceC.registraNuovoConto(saldo, idIntestatario, idCointestatario);
-
 	}
 
-	@PostMapping(path="/addProprietario",produces = "application/json")
-	public Utente registraUtente(@PathVariable Integer idUtente,@PathVariable Integer idContocorrente) {
+	//A che serve?
+	@PutMapping(path="/addProprietario",produces = "application/json")
+	public UtenteDTO registraUtente(@RequestParam Integer idUtente, @RequestParam Integer idContocorrente) {
 		return serviceC.registraUtente(idUtente, idContocorrente);
 	}
+	
 
 	//Leggo i dati dei movimenti del mese corrente
-	@GetMapping(path="/ultimiMovSaldo",consumes = "application/json")
+
+	@GetMapping(path="/ultimiMovSaldo/{numeroConto}",consumes = "application/json")
 	public ContoCorrMovDTO getUltimiMovimentiSaldo(@PathVariable Integer numeroConto){
 		return serviceC.leggiUltimiMovSaldoConto(numeroConto);
 	}
 	
-	@GetMapping(path="/valido")
-	public boolean controllaValido(@RequestParam Integer idContocorrente) {
+	@GetMapping(path="/valido/{idContocorrente}")
+	public boolean controllaValido(@PathVariable Integer idContocorrente) {
 		return serviceC.controlla(idContocorrente);
 	}
 	
-	@PutMapping(path="/addMovimento",produces = "application/json")
-	public Contocorrente effettuaMovimento(@RequestParam Integer numeroConto,@RequestParam Integer idOperatore,@RequestParam Double nuovoSaldo) {
+
+	@PostMapping(path="/addMovimento")
+	public ContocorrenteDTO effettuaMovimento(@RequestParam Integer numeroConto,@RequestParam Integer idOperatore,@RequestParam Double nuovoSaldo) {
 		return serviceC.modificaSaldo(numeroConto,nuovoSaldo,idOperatore);
 	}
 	
-	@DeleteMapping(path="/del")
-	public boolean rimuoviConto(@RequestParam Integer numeroConto) {
+	@DeleteMapping(path="/del{numeroConto}")
+	public boolean rimuoviConto(@PathVariable Integer numeroConto) {
 		return serviceC.eliminaConto(numeroConto);
 	}
 

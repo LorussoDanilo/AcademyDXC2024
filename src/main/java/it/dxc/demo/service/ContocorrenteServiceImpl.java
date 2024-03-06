@@ -10,7 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import it.dxc.demo.dto.ContoCorrMovDTO;
 import it.dxc.demo.dto.ContocorrenteDTO;
+import it.dxc.demo.dto.UtenteDTO;
 import it.dxc.demo.entity.Contocorrente;
+import it.dxc.demo.entity.Indirizzo;
 import it.dxc.demo.entity.Movimento;
 import it.dxc.demo.entity.TipoMovimento;
 import it.dxc.demo.entity.Utente;
@@ -32,44 +34,60 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 	private MovimentoInstantRepository movimentoDAO;
 
 	@Override
-	public Contocorrente registraNuovoConto(double saldo, int idIntestatario, int  idCointestatario) {
+	public ContocorrenteDTO registraNuovoConto(Double saldo, Integer idIntestatario, Integer idCointestatario) {
 
+		Contocorrente c=null;
 		Optional<Utente> o=utenteDAO.findById(idIntestatario);
 		if(o.isEmpty()) {
 			throw new RuntimeException("Utente con id "+ idIntestatario+ " inesistente");
 		}
 		Utente u=o.get();
-
-		Optional<Utente> o2=utenteDAO.findById(idCointestatario);
-		if(o2.isEmpty()) {
-			Contocorrente c = new Contocorrente(saldo, new Date(), u);
+		
+		if(idCointestatario==null) {
+			c = new Contocorrente(saldo, new Date(), u);
 			contocorrenteDAO.save(c);
-			return c;
-		}
-		else {
+			ContocorrenteDTO cdto= new ContocorrenteDTO(c.getNumeroConto(), c.getSaldo(), new Date(), u); 
+			modificaSaldo(c.getNumeroConto(), saldo, idIntestatario);
+			return cdto;
+		}else {
+			Optional<Utente> o2=utenteDAO.findById(idCointestatario);
 			Utente uc = o2.get();
-			Contocorrente c = new Contocorrente(saldo, new Date(), u, uc);
+			c = new Contocorrente(saldo, new Date(), u, uc);
 			contocorrenteDAO.save(c);
-			return c;
-		} 
+			ContocorrenteDTO cdto= new ContocorrenteDTO(c.getNumeroConto(), c.getSaldo(), new Date(),u, uc); 
+			modificaSaldo(c.getNumeroConto(), saldo, idIntestatario);
+			return cdto;
+		} 		
 	}
 
 
 	@Override
-	public Utente registraUtente(int idUtente,int idContocorrente) {
+	public UtenteDTO registraUtente(Integer idUtente,Integer idContocorrente) {
 		Optional<Utente> o=utenteDAO.findById(idUtente);
+
 		Optional<Contocorrente> o2=contocorrenteDAO.findById(idContocorrente);
 
 		if(o.isEmpty()) 
-			throw new RuntimeException("Utente non esistente!!");
-		if(o2.isEmpty())
-			throw new RuntimeException("Contocorrente non esistente!!");
 
+			throw new RuntimeException("Utente non esistente!!");
+
+		if(o2.isEmpty())
+
+			throw new RuntimeException("Contocorrente non esistente!!");
 		Utente u=o.get();
+		//int idUtente, String nome, String cognome, String mail, String telefono, Indirizzo residenza
+		UtenteDTO udto = new UtenteDTO(u.getIdUtente(), u.getNome(), u.getCognome(), u.getMail(), u.getTelefono(), u.getResidenza());
 		Contocorrente c=o2.get();
-		
-		c.setProprietario(u);
-		return u;
+
+
+		if(c.getCoIntestatario()!=null )
+			throw new RuntimeException("Numero massimo di proprietari raggiunto!!");
+
+		if(c.getProprietario().getIdUtente()==idUtente)
+			throw new RuntimeException("proprietario gria inserito!!");
+
+		c.setCoIntestatario(u);
+		return udto;
 	}
 
 
@@ -112,12 +130,21 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 			throw new RuntimeException("Contocorrente non esistente!!");
 		Contocorrente c=o2.get();
 		List<Integer> listaUtenti=movimentoDAO.findUtentiByIdcontocorrente(idContocorrente);
-		
+
 		if(listaUtenti.size()!=0) {
-			if(c.getSaldo()!=contocorrenteDAO.getSaldoComplessivoMovimenti(idContocorrente)){
+			Double n=contocorrenteDAO.getSaldoComplessivoMovimentiVersamenti(idContocorrente);
+			Double n2=contocorrenteDAO.getSaldoComplessivoMovimentiPrelievo(idContocorrente);
+			if(n==null) {
+				n=(double) 0;
+			}
+			if(n2==null) {
+				n2=(double) 0;
+			}
+			
+			if(c.getSaldo()!=n-n2){
 				throw new RuntimeException("Saldo diverso!!");
 			}
-		
+
 			for(int i=0;i<listaUtenti.size();i++) {
 				int id=listaUtenti.get(i);
 				if(id!=c.getProprietario().getIdUtente() && id!=c.getCoIntestatario().getIdUtente()) {
@@ -125,62 +152,66 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 				}
 			}
 		}
-		
+
 		if(c.getSaldo()<-5000) {
 			throw new RuntimeException("Saldo troppo basso!!");
 		}
-		
+
 		if(c.getProprietario()==null) {
 			throw new RuntimeException("Proprietario non presente!!");
 		}
-		
+
 		return true;
 	}
 
 
 	@Override
-	public Contocorrente modificaSaldo(int numeroConto, double nuovoSaldo, int idUtenteOperatore) {
+	public ContocorrenteDTO modificaSaldo(int numeroConto, double nuovoSaldo, int idUtenteOperatore) {
 		Contocorrente conto = contocorrenteDAO.findById(numeroConto)
 				.orElseThrow(() -> new RuntimeException("Contocorrente non esistente!!"));
-		
+
 		List<Movimento> listaMovimenti=movimentoDAO.findAllByFk_contocorrente(conto.getNumeroConto());
-	
+
 		utenteDAO.findById(idUtenteOperatore)
-				.orElseThrow(() -> new RuntimeException("Utente non esistente!!"));
-	
+		.orElseThrow(() -> new RuntimeException("Utente non esistente!!"));
+
 		controlla(numeroConto);
-//		if (!(conto.getProprietario().getIdUtente() == idUtenteOperatore || 
-//			  (conto.getCoIntestatario() != null && conto.getCoIntestatario().getIdUtente() == idUtenteOperatore))) {
-//			throw new RuntimeException("Lâ€™utente idUtenteOperatore non Ã¨ presente a sistema oppure non Ã¨ uno dei proprietari del conto (intestatario o cointestatario)");
-//		}
-	
+		//		if (!(conto.getProprietario().getIdUtente() == idUtenteOperatore || 
+		//			  (conto.getCoIntestatario() != null && conto.getCoIntestatario().getIdUtente() == idUtenteOperatore))) {
+		//			throw new RuntimeException("Lâ€™utente idUtenteOperatore non Ã¨ presente a sistema oppure non Ã¨ uno dei proprietari del conto (intestatario o cointestatario)");
+		//		}
+
 		double saldoCorrente = conto.getSaldo();
 		if (nuovoSaldo == saldoCorrente && conto.getMovimenti().size()>0) {
-			return conto; // Nessuna azione se il nuovo saldo Ã¨ uguale a quello corrente
+			ContocorrenteDTO cdto = new ContocorrenteDTO(conto.getNumeroConto(), conto.getSaldo(), conto.getProprietario());
+			return cdto; // Nessuna azione se il nuovo saldo Ã¨ uguale a quello corrente
 		}
-	
-//		if (nuovoSaldo < -5000) {
-//			throw new RuntimeException("Il saldo finale non puÃ² essere inferiore a -5000 euro.");
-//		}
-	
+
+		//		if (nuovoSaldo < -5000) {
+		//			throw new RuntimeException("Il saldo finale non puÃ² essere inferiore a -5000 euro.");
+		//		}
+
 		double differenza;
-		
+
 		if(listaMovimenti.size()>0) {
 			differenza = nuovoSaldo - saldoCorrente;
 		}else {
 			differenza= saldoCorrente;
 		}
-	
+
 		// Aggiunta movimento principale di aggiornamento del saldo
 		Movimento movimento = new Movimento();
-		
+
 		Utente u=utenteDAO.findById(idUtenteOperatore).orElse(null);
+		movimento.setIdMovimento(null);
 		movimento.setImporto(Math.abs(differenza));
 		movimento.setTipo(differenza < 0 ? TipoMovimento.PRELIEVO : TipoMovimento.VERSAMENTO);
 		movimento.setOperatore(u);
 		movimento.setDataOperazione(new Date());
 		conto.addMovimenti(movimento);
-	
+
+//		movimentoDAO.save(movimento);
+
 		// Se il nuovo saldo Ã¨ negativo, calcola e applica la mora
 		if (nuovoSaldo < 0) {
 			double mora = calcolaMora(nuovoSaldo, saldoCorrente);
@@ -193,14 +224,15 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 				movimentoMora.setOperatore(u);
 				movimentoMora.setDataOperazione(new Date());
 				conto.addMovimenti(movimentoMora);
+//				movimentoDAO.save(movimentoMora);
 			}
 		}
-	
+
 		conto.setSaldo(nuovoSaldo);
-		
-		return conto;
+		ContocorrenteDTO cdto = new ContocorrenteDTO(conto.getNumeroConto(), conto.getSaldo(),new Date(), conto.getProprietario());
+		return cdto;
 	}
-	
+
 	private double calcolaMora(double nuovoSaldo, double saldoCorrente) {
 		double differenza = Math.abs(nuovoSaldo - saldoCorrente);
 		// Calcolo la mora solo se il nuovo saldo Ã¨ minore del saldo corrente e negativo
@@ -212,13 +244,13 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 	public boolean eliminaConto(int numeroConto) {
 		Contocorrente conto = contocorrenteDAO.findById(numeroConto)
 				.orElseThrow(() -> new RuntimeException("Contocorrente non esistente!!"));
-		
+
 		if(conto.getSaldo()!=0) {
 			throw new RuntimeException("Il saldo non Ã¨ zero!!");
 		}
-		
+
 		contocorrenteDAO.deleteById(numeroConto);
-		
+
 		return true;
 	}
 

@@ -39,7 +39,7 @@ public class Contocorrente {
 	private Utente proprietario;
 	
 	@ManyToOne
-	@JoinColumn(name="fk_utente_co")
+	@JoinColumn(name="fk_utente_co",nullable = true)
 	private Utente coIntestatario;
 	
 
