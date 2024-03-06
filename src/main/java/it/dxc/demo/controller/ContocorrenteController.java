@@ -67,4 +67,10 @@ public class ContocorrenteController {
 	public ReportDTO report() {
 		return serviceC.report();
 	}
+	
+	@DeleteMapping(path="/sgancia")
+	public ContoCorrMovDTO sganciaCo(@RequestParam Integer idCointestatario,@RequestParam Integer numeroConto) {
+		return serviceC.sganciaCointestatario(numeroConto,idCointestatario);
+	}
+	
 }
