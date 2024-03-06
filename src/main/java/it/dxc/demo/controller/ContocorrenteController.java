@@ -52,7 +52,7 @@ public class ContocorrenteController {
 		return serviceC.modificaSaldo(numeroConto,nuovoSaldo,idOperatore);
 	}
 	
-	@DeleteMapping(path="/del")
+	@DeleteMapping(path="/del{numeroConto}")
 	public boolean rimuoviConto(@PathVariable Integer numeroConto) {
 		return serviceC.eliminaConto(numeroConto);
 	}
