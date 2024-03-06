@@ -47,8 +47,9 @@ public class UtenteServiceImpl implements UtenteService {
 	}
 
 	@Override
-	public UtenteDTO modificaUtente(Utente utente) {
-		Optional<Utente> o=utenteDAO.findById(utente.getIdUtente());
+	public UtenteDTO modificaUtente(Utente utente, Integer idUtente) {
+		Optional<Utente> o=utenteDAO.findById(idUtente);
+
 
 		if(o.isEmpty()) 
 			throw new RuntimeException("Utente non esistente!!");
@@ -58,6 +59,7 @@ public class UtenteServiceImpl implements UtenteService {
 		u.setCognome(utente.getCognome());
 		u.setMail(utente.getMail());
 		u.setTelefono(utente.getTelefono());
+    u.setResidenza(utente.getResidenza());
 		
 		UtenteDTO udto = new UtenteDTO(u.getIdUtente(), u.getNome(), u.getCognome(), u.getMail(), u.getTelefono(), u.getResidenza());
 		return udto;

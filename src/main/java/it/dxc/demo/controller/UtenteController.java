@@ -32,19 +32,18 @@ public class UtenteController {
 	/*Si potrebbe  anche non mettere pathVariable, poichè è indifferente, ma aiuta nello sviluppo del frontend. 
 	perchè cosi posso scegliere quale utente modificare
 	*/
-	
-	@PutMapping(path = "/change",produces = "application/json",consumes = "application/json")
-	public UtenteDTO modificaUtente(@RequestBody Utente utente) {
-		return serviceU.modificaUtente(utente);
+
+	@PutMapping(path = "/change/{idUtente}",produces = "application/json",consumes = "application/json")
+	public UtenteDTO modificaUtente(@RequestBody Utente utente, @PathVariable Integer idUtente) {
+		return serviceU.modificaUtente(utente,idUtente);
 	}
 	
-	@GetMapping(path = "/get/{idUtente}",produces="application/json")
+	@GetMapping(path = "/get/{idUtente}")
 	public UtenteDTO getUtente(@PathVariable Integer idUtente) {
-		
 		return serviceU.letturaDatiBase(idUtente);
 	}
 	
-	@GetMapping(path = "/getSalienti",produces = "application/json")
+	@GetMapping(path = "/getSalienti/{idUtente}",produces = "application/json")
 	public UtenteSalientiDTO getUtenteSalienti(@PathVariable Integer idUtente) {
 		
 		return serviceU.letturaDatiSalienti(idUtente);
@@ -54,7 +53,8 @@ public class UtenteController {
 		return serviceU.getListaUtentiByName(nome);
 	}
 	
-	@DeleteMapping("/del/{idutente}")
+
+	@DeleteMapping("/del/{idUtente}")
 	public boolean delUtente(@PathVariable Integer idUtente) {
 		
 		return serviceU.cancellazioneUtente(idUtente);
@@ -62,7 +62,6 @@ public class UtenteController {
 	
 	@GetMapping(path = "/report",produces = "application/json")
 	public List<UtentiDTO> reportUtente() {
-		
 		return serviceU.reportUtenti();
 	}
 }
