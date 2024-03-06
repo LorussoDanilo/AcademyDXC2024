@@ -1,6 +1,8 @@
 package it.dxc.demo.controller;
 
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import it.dxc.demo.dto.ContoCorrMovDTO;
 import it.dxc.demo.dto.ContocorrenteDTO;
+import it.dxc.demo.dto.MovimentoDTO;
 import it.dxc.demo.dto.UtenteDTO;
 import it.dxc.demo.service.ContocorrenteService;
 
@@ -33,7 +36,10 @@ public class ContocorrenteController {
 		return serviceC.registraUtente(idUtente, idContocorrente);
 	}
 	
-
+	@GetMapping(path="/ultimiMov")
+	public List<MovimentoDTO> leggiUltimiMovimentiConto(@RequestParam Integer numeroConto){
+		return serviceC.leggiUltimiMovimentiConto(numeroConto);
+	}
 	//Leggo i dati dei movimenti del mese corrente
 
 	@GetMapping(path="/ultimiMovSaldo/{numeroConto}",consumes = "application/json")
@@ -56,7 +62,12 @@ public class ContocorrenteController {
 	public boolean rimuoviConto(@RequestParam Integer numeroConto) {
 		return serviceC.eliminaConto(numeroConto);
 	}
-
+	
+	@GetMapping(path="/leggiDati")
+	public ContocorrenteDTO leggiDatiConto(@RequestParam Integer numeroConto) {
+		return serviceC.leggiDatiConto(numeroConto);
+		
+	}
 
 
 }

@@ -2,7 +2,9 @@ package it.dxc.demo.dto;
 
 
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import it.dxc.demo.entity.Utente;
 import jakarta.persistence.Temporal;
@@ -13,11 +15,58 @@ public class ContocorrenteDTO {
 	private double saldo;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date dataUltimoMovimento;
+	@Temporal (TemporalType.TIMESTAMP)
+	private Date dataApertura;
 	private Utente intestatario;
 	private Utente cointestatario;
+	private int idIntestatario;
+	private int idCointestatario;
+	private List<Integer> idMovimenti = new ArrayList<>();
+	
+	public ContocorrenteDTO(int numConto, Date dataApertura, double saldo, int idIntestatario, int idCointestatario, List<Integer> idMovimenti) {
+		
+		this.numConto = numConto;
+		this.saldo = saldo;
+		this.dataApertura = dataApertura;
+		this.idIntestatario=idIntestatario;
+		this.idCointestatario=idCointestatario;
+		this.idMovimenti=idMovimenti;
+	}
 	
 	
+	public ContocorrenteDTO(int numConto, Date dataApertura, double saldo, int idIntestatario, List<Integer> idMovimenti) {
+		
+		this.numConto = numConto;
+		this.saldo = saldo;
+		this.dataApertura = dataApertura;
+		this.idIntestatario=idIntestatario;
+		this.idMovimenti=idMovimenti;
+	}
 	
+	public Date getDataApertura() {
+		return dataApertura;
+	}
+
+	public void setDataApertura(Date dataApertura) {
+		this.dataApertura = dataApertura;
+	}
+
+	public int getIdIntestatario() {
+		return idIntestatario;
+	}
+
+	public void setIdIntestatario(int idIntestatario) {
+		this.idIntestatario = idIntestatario;
+	}
+
+	public int getIdCointestatario() {
+		return idCointestatario;
+	}
+
+	public void setIdCointestatario(int idCointestatario) {
+		this.idCointestatario = idCointestatario;
+	}
+
 	public ContocorrenteDTO(int numConto, double saldo, Date dataUltimoMovimento, Utente intestatario,
 			Utente cointestatario) {
 		super();
@@ -100,11 +149,23 @@ public class ContocorrenteDTO {
 		this.dataUltimoMovimento = dataUltimoMovimento;
 	}
 
+	
+	public List<Integer> getIdMovimenti() {
+		return idMovimenti;
+	}
+
+
 	@Override
 	public String toString() {
 		return "ContocorrenteDTO [numConto=" + numConto + ", saldo=" + saldo + ", dataUltimoMovimento="
-				+ dataUltimoMovimento + ", intestatario=" + intestatario + ", cointestatario=" + cointestatario + "]";
+				+ dataUltimoMovimento + ", dataApertura=" + dataApertura + ", intestatario=" + intestatario
+				+ ", cointestatario=" + cointestatario + ", idIntestatario=" + idIntestatario + ", idCointestatario="
+				+ idCointestatario + ", idMovimenti=" + idMovimenti + "]";
 	}
+
+
+	
+	
 
 	
 	
