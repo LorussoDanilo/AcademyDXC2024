@@ -229,7 +229,7 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 		}
 
 		conto.setSaldo(nuovoSaldo);
-		ContocorrenteDTO cdto = new ContocorrenteDTO(conto.getNumeroConto(), conto.getSaldo(), conto.getProprietario());
+		ContocorrenteDTO cdto = new ContocorrenteDTO(conto.getNumeroConto(), conto.getSaldo(),new Date(), conto.getProprietario());
 		return cdto;
 	}
 
