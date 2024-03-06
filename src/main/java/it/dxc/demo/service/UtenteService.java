@@ -13,7 +13,6 @@ public interface UtenteService {
 	
 	public UtenteDTO modificaUtente(Utente utente, Integer idUtente);
 
-	
 	public UtenteDTO letturaDatiBase(int idUtente);
 	
 	public UtenteSalientiDTO letturaDatiSalienti(int idUtente);

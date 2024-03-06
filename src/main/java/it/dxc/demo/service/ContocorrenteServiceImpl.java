@@ -1,5 +1,6 @@
 package it.dxc.demo.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -10,6 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import it.dxc.demo.dto.ContoCorrMovDTO;
 import it.dxc.demo.dto.ContocorrenteDTO;
+
+import it.dxc.demo.dto.MovimentoDTO;
+
 import it.dxc.demo.dto.ContocorrenteReportDTO;
 import it.dxc.demo.dto.ReportDTO;
 import it.dxc.demo.dto.UtenteDTO;
@@ -108,11 +112,18 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 
 
 	@Override
-	public List<Movimento> leggiUltimiMovimentiConto(int numeroConto) {
+	public List<MovimentoDTO> leggiUltimiMovimentiConto(int numeroConto) {
 		List<Movimento> movimenti = movimentoDAO.getMovimenti(numeroConto);
+		List <MovimentoDTO> listaMovimentiDTO = new ArrayList <MovimentoDTO>();
+
 		if(movimenti.isEmpty()) 
 			throw new RuntimeException("Non esiste nessun movimento legato a questo conto corrente!!");
-		return movimenti;
+		
+		for (Movimento mov : movimenti) {
+			MovimentoDTO movRestituitoDTO = new MovimentoDTO(mov.getIdMovimento(), mov.getTipo(), mov.getImporto(), mov.getDataOperazione(), mov.getOperatore());
+			listaMovimentiDTO.add(movRestituitoDTO);
+		}	
+		return listaMovimentiDTO;
 	}
 
 
@@ -305,6 +316,29 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 		
 		
 		return report;
+	}
+
+
+	@Override
+	public ContocorrenteDTO leggiDatiConto(int numeroConto) {
+		Optional<Contocorrente> o=contocorrenteDAO.findById(numeroConto);
+
+		if(o.isEmpty()) 
+			return null;
+		Contocorrente c =o.get();
+		List <Integer> idMovimenti = new ArrayList<>();
+		for (int i = 0; i < c.getMovimenti().size(); i++ ) {
+			Integer idMov = c.getMovimenti().get(i).getIdMovimento();
+			idMovimenti.add(idMov);		
+		}
+		if (c.getCoIntestatario()== null) {
+			ContocorrenteDTO cdto = new ContocorrenteDTO(c.getNumeroConto(), c.getDataDiApertura(), c.getSaldo(), c.getProprietario().getIdUtente(), idMovimenti);
+			return cdto;
+		}
+		else {
+			ContocorrenteDTO cdto = new ContocorrenteDTO(c.getNumeroConto(), c.getDataDiApertura(), c.getSaldo(), c.getProprietario().getIdUtente(), c.getCoIntestatario().getIdUtente(), idMovimenti);
+			return cdto;
+		}
 	}
 
 }

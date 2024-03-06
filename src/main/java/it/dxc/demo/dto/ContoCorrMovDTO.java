@@ -6,7 +6,7 @@ import it.dxc.demo.entity.Movimento;
 
 public class ContoCorrMovDTO {
 	private int numeroConto;
-	private List<Movimento> movimenti;
+	private List<MovimentoDTO> movimenti;
 	private double saldo;
 	
 	public ContoCorrMovDTO() {
@@ -15,9 +15,9 @@ public class ContoCorrMovDTO {
 
 
 
-	public ContoCorrMovDTO(int numeroConto, List<Movimento> movimenti, double saldo) {
+	public ContoCorrMovDTO(int numeroConto, List<MovimentoDTO> list, double saldo) {
 		this.numeroConto = numeroConto;
-		this.movimenti = movimenti;
+		this.movimenti = list;
 		this.saldo = saldo;
 	}
 	
@@ -30,13 +30,13 @@ public class ContoCorrMovDTO {
 		this.numeroConto = numeroConto;
 	}
 	
-	public List<Movimento> getMovimenti() {
+	public List<MovimentoDTO> getMovimenti() {
 		return movimenti;
 	}
 
 
 
-	public void setMovimenti(List<Movimento> movimenti) {
+	public void setMovimenti(List<MovimentoDTO> movimenti) {
 		this.movimenti = movimenti;
 	}
 
