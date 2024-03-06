@@ -16,6 +16,7 @@ import it.dxc.demo.entity.Indirizzo;
 import it.dxc.demo.entity.Utente;
 import it.dxc.demo.dto.UtentiDTO;
 import it.dxc.demo.dto.ContocorrenteDTO;
+import it.dxc.demo.dto.UtenteDTO;
 import it.dxc.demo.repository.ContocorrenteInstantRepository;
 import it.dxc.demo.repository.UtenteInstantRepository;
 
@@ -30,7 +31,7 @@ public class UtenteServiceImpl implements UtenteService {
 	private ContocorrenteInstantRepository contocorrenteDAO;
 
 	@Override
-	public Utente creaUtente(Utente utente, Indirizzo indirizzo) {
+	public UtenteDTO creaUtente(Utente utente, Indirizzo indirizzo) {
 
 		int b=utenteDAO.controlByMail(utente.getMail());
 
@@ -40,12 +41,15 @@ public class UtenteServiceImpl implements UtenteService {
 
 		Utente u=new Utente(utente.getNome(),utente.getCognome(),utente.getMail(),utente.getTelefono(),indirizzo);
 		utenteDAO.save(u);
-		return u;
+		//int idUtente, String nome, String cognome, String mail, String telefono, Indirizzo residenza
+		UtenteDTO udto = new UtenteDTO(u.getIdUtente(), u.getNome(), u.getCognome(), u.getMail(), u.getTelefono(), u.getResidenza());
+		return udto;
 	}
 
 	@Override
-	public Utente modificaUtente(Utente utente,Integer idUtente) {
+	public UtenteDTO modificaUtente(Utente utente, Integer idUtente) {
 		Optional<Utente> o=utenteDAO.findById(idUtente);
+
 
 		if(o.isEmpty()) 
 			throw new RuntimeException("Utente non esistente!!");
@@ -55,20 +59,22 @@ public class UtenteServiceImpl implements UtenteService {
 		u.setCognome(utente.getCognome());
 		u.setMail(utente.getMail());
 		u.setTelefono(utente.getTelefono());
-		u.setResidenza(utente.getResidenza());
-
-		return u;
+    u.setResidenza(utente.getResidenza());
+		
+		UtenteDTO udto = new UtenteDTO(u.getIdUtente(), u.getNome(), u.getCognome(), u.getMail(), u.getTelefono(), u.getResidenza());
+		return udto;
 	}
 
 	@Override
-	public Utente letturaDatiBase(int idUtente) {
+	public UtenteDTO letturaDatiBase(int idUtente) {
 		Optional<Utente> o=utenteDAO.findById(idUtente);
 
 		if(o.isEmpty()) 
 			throw new RuntimeException("Utente non esistente!!");
 
 		Utente u=o.get();
-		return u;
+		UtenteDTO udto = new UtenteDTO(u.getIdUtente(), u.getNome(), u.getCognome(), u.getMail(), u.getTelefono(), u.getResidenza());
+		return udto;
 	}
 
 	@Override
@@ -134,9 +140,17 @@ public class UtenteServiceImpl implements UtenteService {
 	}
 
 	@Override
-	public List<Utente> getListaUtentiByName(String nome) {
-		return utenteDAO.getListaUtentiByName(nome);
-	}
+	public List<UtenteDTO> getListaUtentiByName(String nome) {
+		List<Utente> listautenti = utenteDAO.getListaUtentiByName(nome);
+		List <UtenteDTO> listaServiceDTO = new ArrayList <UtenteDTO>();
+		for (Utente ut : listautenti) {
+			UtenteDTO utRestituitoDTO = new UtenteDTO (ut.getIdUtente(), ut.getNome(), ut.getCognome(), ut.getMail(), ut.getTelefono(), ut.getResidenza());
+			listaServiceDTO.add(utRestituitoDTO);
+		}
+		return listaServiceDTO;
+		}
+
+		
 
 
 }

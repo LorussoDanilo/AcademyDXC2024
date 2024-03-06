@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import it.dxc.demo.dto.UtenteDTO;
 import it.dxc.demo.dto.UtenteSalientiDTO;
 import it.dxc.demo.dto.UtentiDTO;
 
@@ -24,21 +26,20 @@ public class UtenteController {
 	 * Per esempio può essere usato per l'invio di un pdf
 	 */
 	@PostMapping(path = "/new")
-	public Utente creaUtente(@RequestBody Utente utente) {
+	public UtenteDTO creaUtente(@RequestBody Utente utente) {
 		return serviceU.creaUtente(utente, utente.getResidenza());
 	}
 	/*Si potrebbe  anche non mettere pathVariable, poichè è indifferente, ma aiuta nello sviluppo del frontend. 
 	perchè cosi posso scegliere quale utente modificare
 	*/
+
 	@PutMapping(path = "/change/{idUtente}",produces = "application/json",consumes = "application/json")
-	public Utente modificaUtente(@RequestBody Utente utente, @PathVariable Integer idUtente) {
-		
+	public UtenteDTO modificaUtente(@RequestBody Utente utente, @PathVariable Integer idUtente) {
 		return serviceU.modificaUtente(utente,idUtente);
 	}
 	
-	@GetMapping(path = "/get/{idUtente}",produces="application/json")
-	public Utente getUtente(@PathVariable Integer idUtente) {
-		
+	@GetMapping(path = "/get/{idUtente}")
+	public UtenteDTO getUtente(@PathVariable Integer idUtente) {
 		return serviceU.letturaDatiBase(idUtente);
 	}
 	
@@ -48,10 +49,11 @@ public class UtenteController {
 		return serviceU.letturaDatiSalienti(idUtente);
 	}
 	@GetMapping("/utentibyname")
-	public List<Utente>  getListaUtentiByName(@RequestParam String nome){
+	public List<UtenteDTO>  getListaUtentiByName(@RequestParam String nome){
 		return serviceU.getListaUtentiByName(nome);
 	}
 	
+
 	@DeleteMapping("/del/{idUtente}")
 	public boolean delUtente(@PathVariable Integer idUtente) {
 		
@@ -60,7 +62,6 @@ public class UtenteController {
 	
 	@GetMapping(path = "/report",produces = "application/json")
 	public List<UtentiDTO> reportUtente() {
-		
 		return serviceU.reportUtenti();
 	}
 }

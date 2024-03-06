@@ -10,7 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import it.dxc.demo.dto.ContoCorrMovDTO;
 import it.dxc.demo.dto.ContocorrenteDTO;
+import it.dxc.demo.dto.UtenteDTO;
 import it.dxc.demo.entity.Contocorrente;
+import it.dxc.demo.entity.Indirizzo;
 import it.dxc.demo.entity.Movimento;
 import it.dxc.demo.entity.TipoMovimento;
 import it.dxc.demo.entity.Utente;
@@ -32,7 +34,7 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 	private MovimentoInstantRepository movimentoDAO;
 
 	@Override
-	public Contocorrente registraNuovoConto(Double saldo, Integer idIntestatario, Integer idCointestatario) {
+	public ContocorrenteDTO registraNuovoConto(Double saldo, Integer idIntestatario, Integer idCointestatario) {
 
 		Contocorrente c=null;
 		Optional<Utente> o=utenteDAO.findById(idIntestatario);
@@ -44,23 +46,25 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 		if(idCointestatario==null) {
 			c = new Contocorrente(saldo, new Date(), u);
 			contocorrenteDAO.save(c);
-			
+			ContocorrenteDTO cdto= new ContocorrenteDTO(c.getNumeroConto(), c.getSaldo(), new Date(), u); 
+      modificaSaldo(c.getNumeroConto(), saldo, idIntestatario);
+			return cdto;
 		}else {
 			Optional<Utente> o2=utenteDAO.findById(idCointestatario);
 			Utente uc = o2.get();
 			c = new Contocorrente(saldo, new Date(), u, uc);
 			contocorrenteDAO.save(c);
-		}
-		
-		modificaSaldo(c.getNumeroConto(), saldo, idIntestatario);
-		return c;
+			ContocorrenteDTO cdto= new ContocorrenteDTO(c.getNumeroConto(), c.getSaldo(), new Date(),u, uc); 
+      modificaSaldo(c.getNumeroConto(), saldo, idIntestatario);
+			return cdto;
+		} 		
 	}
 
 
 	@Override
-	public Utente registraUtente(int idCointestatario,int idContocorrente) {
+	public UtenteDTO registraUtente(int idUtente,int idContocorrente) {
+		Optional<Utente> o=utenteDAO.findById(idUtente);
 
-		Optional<Utente> o=utenteDAO.findById(idCointestatario);
 		Optional<Contocorrente> o2=contocorrenteDAO.findById(idContocorrente);
 
 		if(o.isEmpty()) 
@@ -71,6 +75,8 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 
 			throw new RuntimeException("Contocorrente non esistente!!");
 		Utente u=o.get();
+		//int idUtente, String nome, String cognome, String mail, String telefono, Indirizzo residenza
+		UtenteDTO udto = new UtenteDTO(u.getIdUtente(), u.getNome(), u.getCognome(), u.getMail(), u.getTelefono(), u.getResidenza());
 		Contocorrente c=o2.get();
 
 
@@ -81,7 +87,7 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 			throw new RuntimeException("proprietario gria inserito!!");
 
 		c.setCoIntestatario(u);
-		return u;
+		return udto;
 	}
 
 
@@ -160,7 +166,7 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 
 
 	@Override
-	public Contocorrente modificaSaldo(int numeroConto, double nuovoSaldo, int idUtenteOperatore) {
+	public ContocorrenteDTO modificaSaldo(int numeroConto, double nuovoSaldo, int idUtenteOperatore) {
 		Contocorrente conto = contocorrenteDAO.findById(numeroConto)
 				.orElseThrow(() -> new RuntimeException("Contocorrente non esistente!!"));
 
@@ -177,7 +183,8 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 
 		double saldoCorrente = conto.getSaldo();
 		if (nuovoSaldo == saldoCorrente && conto.getMovimenti().size()>0) {
-			return conto; // Nessuna azione se il nuovo saldo Ã¨ uguale a quello corrente
+			ContocorrenteDTO cdto = new ContocorrenteDTO(conto.getNumeroConto(), conto.getSaldo(), conto.getProprietario());
+			return cdto; // Nessuna azione se il nuovo saldo Ã¨ uguale a quello corrente
 		}
 
 		//		if (nuovoSaldo < -5000) {
@@ -222,10 +229,8 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 		}
 
 		conto.setSaldo(nuovoSaldo);
-
-		System.out.println(conto);
-
-		return conto;
+		ContocorrenteDTO cdto = new ContocorrenteDTO(conto.getNumeroConto(), conto.getSaldo(), conto.getProprietario());
+		return cdto;
 	}
 
 	private double calcolaMora(double nuovoSaldo, double saldoCorrente) {
