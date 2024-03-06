@@ -6,12 +6,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties.ContainerType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import it.dxc.demo.dto.ContoCorrMovDTO;
 import it.dxc.demo.dto.ContocorrenteDTO;
-
+import it.dxc.demo.dto.ContocorrenteLeggiDTO;
 import it.dxc.demo.dto.MovimentoDTO;
 
 import it.dxc.demo.dto.ContocorrenteReportDTO;
@@ -286,8 +287,14 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 			throw new RuntimeException("L'utente specificato non è il cointestatario o è già stato sganciato");
 		}
 
+		List<MovimentoDTO> movimentiDTO = new ArrayList<MovimentoDTO>();
 		//DTO con le informazioni aggiornate del conto
-		ContoCorrMovDTO contoCorrMovDTO = new ContoCorrMovDTO(conto.getNumeroConto(), conto.getMovimenti(), conto.getSaldo());
+		for(int i=0;i<conto.getMovimenti().size();i++) {
+			movimentiDTO.add(new MovimentoDTO(conto.getMovimenti().get(i).getIdMovimento(),conto.getMovimenti().get(i).getTipo(),
+					conto.getMovimenti().get(i).getImporto(),conto.getMovimenti().get(i).getDataOperazione(),conto.getMovimenti().get(i).getOperatore()));
+		}
+		
+		ContoCorrMovDTO contoCorrMovDTO = new ContoCorrMovDTO(conto.getNumeroConto(), movimentiDTO, conto.getSaldo());
 
     	return contoCorrMovDTO;
     }
@@ -297,7 +304,12 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 		Contocorrente conto = contocorrenteDAO.findById(numeroConto)
 				.orElseThrow(() -> new RuntimeException("Contocorrente non esistente!!"));
 		
-		ContoCorrMovDTO contoDTO=new ContoCorrMovDTO(conto.getNumeroConto(),conto.getMovimenti(),conto.getSaldo());
+		List<MovimentoDTO> movimentiDTO = new ArrayList<MovimentoDTO>();
+		for(int i=0;i<conto.getMovimenti().size();i++) {
+			movimentiDTO.add(new MovimentoDTO(conto.getMovimenti().get(i).getIdMovimento(),conto.getMovimenti().get(i).getTipo(),
+					conto.getMovimenti().get(i).getImporto(),conto.getMovimenti().get(i).getDataOperazione(),conto.getMovimenti().get(i).getOperatore()));
+		}
+		ContoCorrMovDTO contoDTO=new ContoCorrMovDTO(conto.getNumeroConto(),movimentiDTO,conto.getSaldo());
 		
 		return contoDTO;
 	}
@@ -320,7 +332,7 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 
 
 	@Override
-	public ContocorrenteDTO leggiDatiConto(int numeroConto) {
+	public ContocorrenteLeggiDTO leggiDatiConto(int numeroConto) {
 		Optional<Contocorrente> o=contocorrenteDAO.findById(numeroConto);
 
 		if(o.isEmpty()) 
@@ -332,11 +344,11 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 			idMovimenti.add(idMov);		
 		}
 		if (c.getCoIntestatario()== null) {
-			ContocorrenteDTO cdto = new ContocorrenteDTO(c.getNumeroConto(), c.getDataDiApertura(), c.getSaldo(), c.getProprietario().getIdUtente(), idMovimenti);
+			ContocorrenteLeggiDTO cdto = new ContocorrenteLeggiDTO(c.getNumeroConto(), c.getSaldo(), c.getDataDiApertura(), c.getProprietario().getIdUtente(), idMovimenti);
 			return cdto;
 		}
 		else {
-			ContocorrenteDTO cdto = new ContocorrenteDTO(c.getNumeroConto(), c.getDataDiApertura(), c.getSaldo(), c.getProprietario().getIdUtente(), c.getCoIntestatario().getIdUtente(), idMovimenti);
+			ContocorrenteLeggiDTO cdto = new ContocorrenteLeggiDTO(c.getNumeroConto(), c.getSaldo(), c.getDataDiApertura(), c.getProprietario().getIdUtente(), c.getCoIntestatario().getIdUtente(), idMovimenti);
 			return cdto;
 		}
 	}

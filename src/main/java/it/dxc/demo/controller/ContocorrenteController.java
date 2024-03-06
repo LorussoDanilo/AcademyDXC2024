@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import it.dxc.demo.dto.ContoCorrMovDTO;
 import it.dxc.demo.dto.ContocorrenteDTO;
-
+import it.dxc.demo.dto.ContocorrenteLeggiDTO;
 import it.dxc.demo.dto.MovimentoDTO;
 import it.dxc.demo.dto.ReportDTO;
 
@@ -66,8 +66,8 @@ public class ContocorrenteController {
 		return serviceC.eliminaConto(numeroConto);
 	}
 
-	@GetMapping(path="/leggiDati")
-	public ContocorrenteDTO leggiDatiConto(@RequestParam Integer numeroConto) {
+	@GetMapping(path="/leggiDati/{numeroConto}")
+	public ContocorrenteLeggiDTO leggiDatiConto(@PathVariable Integer numeroConto) {
 		return serviceC.leggiDatiConto(numeroConto);
 		
 	}

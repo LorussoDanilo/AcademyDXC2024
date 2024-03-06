@@ -4,6 +4,7 @@ import java.util.List;
 
 import it.dxc.demo.dto.ContoCorrMovDTO;
 import it.dxc.demo.dto.ContocorrenteDTO;
+import it.dxc.demo.dto.ContocorrenteLeggiDTO;
 import it.dxc.demo.dto.MovimentoDTO;
 import it.dxc.demo.dto.ReportDTO;
 
@@ -24,7 +25,7 @@ public interface ContocorrenteService {
 	public ContocorrenteDTO modificaSaldo(int numeroConto, double nuovoSaldo, int idOperatore);
 	public boolean eliminaConto(int numeroConto);
 
-	public ContocorrenteDTO leggiDatiConto (int numeroConto);
+	public ContocorrenteLeggiDTO leggiDatiConto (int numeroConto);
 	public ContoCorrMovDTO sganciaCointestatario(int numeroConto, int idCointestatario);
 	public ContoCorrMovDTO leggiDatiSalientiConto(Integer numeroConto);
 	public ReportDTO report();

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import it.dxc.demo.dto.MovimentoDTO;
 import it.dxc.demo.entity.Movimento;
 
 public interface MovimentoInstantRepository extends JpaRepository<Movimento, Integer>{
@@ -27,4 +28,6 @@ public interface MovimentoInstantRepository extends JpaRepository<Movimento, Int
 			+"WHERE fk_contocorrente=:idContocorrente")
 	public Integer sommaMovimenti(int idContocorrente);
 	
+	@Query(nativeQuery = true, value="SELECT * FROM movimenti m WHERE fk_contocorrente=:numeroConto")
+	public List<MovimentoDTO> getMovimentiDTO(int numeroConto);
 }
