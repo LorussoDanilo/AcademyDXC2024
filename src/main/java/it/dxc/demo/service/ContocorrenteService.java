@@ -19,4 +19,6 @@ public interface ContocorrenteService {
 	public boolean controlla(int idContocorrente);
 	public ContocorrenteDTO modificaSaldo(int numeroConto, double nuovoSaldo, int idOperatore);
 	public boolean eliminaConto(int numeroConto);
+	public ContoCorrMovDTO leggiDatiSalientiConto(Integer numeroConto);
+	
 }

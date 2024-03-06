@@ -57,6 +57,9 @@ public class ContocorrenteController {
 		return serviceC.eliminaConto(numeroConto);
 	}
 
-
+	@GetMapping(path="/datiSalienti/{numeroConto}")
+	public ContoCorrMovDTO datiSalientiConto(@PathVariable Integer numeroConto) {
+		return serviceC.leggiDatiSalientiConto(numeroConto);
+	}
 
 }

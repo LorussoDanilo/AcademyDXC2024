@@ -254,4 +254,15 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 		return true;
 	}
 
+
+	@Override
+	public ContoCorrMovDTO leggiDatiSalientiConto(Integer numeroConto) {
+		Contocorrente conto = contocorrenteDAO.findById(numeroConto)
+				.orElseThrow(() -> new RuntimeException("Contocorrente non esistente!!"));
+		
+		ContoCorrMovDTO contoDTO=new ContoCorrMovDTO(conto.getNumeroConto(),conto.getMovimenti(),conto.getSaldo());
+		
+		return contoDTO;
+	}
+
 }
