@@ -9,7 +9,7 @@ import it.dxc.demo.entity.Movimento;
 
 public interface MovimentoInstantRepository extends JpaRepository<Movimento, Integer>{
 	
-	@Query(nativeQuery = true, value="SELECT m.* FROM Movimento m WHERE MONTH(m.dataOperazione) =  MONTH(GETDATE())")
+	@Query(nativeQuery = true, value="SELECT m.* FROM movimenti m WHERE MONTH(m.data_operazione) =  MONTH(now())")
 	public List<Movimento> getMovimenti(int numeroConto);
 	
 	@Query(nativeQuery = true,value="SELECT u.id_utente "
