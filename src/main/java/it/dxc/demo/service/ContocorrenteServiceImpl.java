@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import it.dxc.demo.dto.ContoCorrMovDTO;
 import it.dxc.demo.dto.ContocorrenteDTO;
+import it.dxc.demo.dto.ContocorrenteReportDTO;
+import it.dxc.demo.dto.ReportDTO;
 import it.dxc.demo.dto.UtenteDTO;
 import it.dxc.demo.entity.Contocorrente;
 import it.dxc.demo.entity.Indirizzo;
@@ -263,6 +265,22 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 		ContoCorrMovDTO contoDTO=new ContoCorrMovDTO(conto.getNumeroConto(),conto.getMovimenti(),conto.getSaldo());
 		
 		return contoDTO;
+	}
+
+
+	@Override
+	public ReportDTO report() {
+		List<Contocorrente> conti=contocorrenteDAO.findAll();
+		ReportDTO report=new ReportDTO(contocorrenteDAO.getPatrimonioBanca());
+		
+		for(int i=0;i<conti.size();i++) {
+			ContocorrenteReportDTO contoReport=new ContocorrenteReportDTO(conti.get(i).getNumeroConto(),conti.get(i).getSaldo(),
+					conti.get(i).getProprietario().getNome(),conti.get(i).getProprietario().getCognome(),movimentoDAO.sommaMovimenti(conti.get(i).getNumeroConto()));
+			report.addConti(contoReport);
+		}
+		
+		
+		return report;
 	}
 
 }

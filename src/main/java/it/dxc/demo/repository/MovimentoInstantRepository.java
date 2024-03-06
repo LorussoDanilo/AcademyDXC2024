@@ -22,4 +22,9 @@ public interface MovimentoInstantRepository extends JpaRepository<Movimento, Int
 			+"WHERE fk_contocorrente=:idContocorrente")
 	public List<Movimento> findAllByFk_contocorrente(int idContocorrente);
 
+	@Query(nativeQuery = true,value="SELECT COUNT(*) "
+			+"FROM movimenti "
+			+"WHERE fk_contocorrente=:idContocorrente")
+	public Integer sommaMovimenti(int idContocorrente);
+	
 }
