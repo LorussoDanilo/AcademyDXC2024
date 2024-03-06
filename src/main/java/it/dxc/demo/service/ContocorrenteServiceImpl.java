@@ -11,10 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import it.dxc.demo.dto.ContoCorrMovDTO;
 import it.dxc.demo.dto.ContocorrenteDTO;
+
 import it.dxc.demo.dto.MovimentoDTO;
+
+import it.dxc.demo.dto.ContocorrenteReportDTO;
+import it.dxc.demo.dto.ReportDTO;
 import it.dxc.demo.dto.UtenteDTO;
 import it.dxc.demo.entity.Contocorrente;
-import it.dxc.demo.entity.Indirizzo;
 import it.dxc.demo.entity.Movimento;
 import it.dxc.demo.entity.TipoMovimento;
 import it.dxc.demo.entity.Utente;
@@ -49,7 +52,7 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 			c = new Contocorrente(saldo, new Date(), u);
 			contocorrenteDAO.save(c);
 			ContocorrenteDTO cdto= new ContocorrenteDTO(c.getNumeroConto(), c.getSaldo(), new Date(), u); 
-      modificaSaldo(c.getNumeroConto(), saldo, idIntestatario);
+			modificaSaldo(c.getNumeroConto(), saldo, idIntestatario);
 			return cdto;
 		}else {
 			Optional<Utente> o2=utenteDAO.findById(idCointestatario);
@@ -57,7 +60,7 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 			c = new Contocorrente(saldo, new Date(), u, uc);
 			contocorrenteDAO.save(c);
 			ContocorrenteDTO cdto= new ContocorrenteDTO(c.getNumeroConto(), c.getSaldo(), new Date(),u, uc); 
-      modificaSaldo(c.getNumeroConto(), saldo, idIntestatario);
+			modificaSaldo(c.getNumeroConto(), saldo, idIntestatario);
 			return cdto;
 		} 		
 	}
@@ -238,7 +241,7 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 		}
 
 		conto.setSaldo(nuovoSaldo);
-		ContocorrenteDTO cdto = new ContocorrenteDTO(conto.getNumeroConto(), conto.getSaldo(), conto.getProprietario());
+		ContocorrenteDTO cdto = new ContocorrenteDTO(conto.getNumeroConto(), conto.getSaldo(),new Date(), conto.getProprietario());
 		return cdto;
 	}
 
@@ -261,6 +264,58 @@ public class ContocorrenteServiceImpl implements ContocorrenteService {
 		contocorrenteDAO.deleteById(numeroConto);
 
 		return true;
+	}
+	
+	@Override
+    public ContoCorrMovDTO sganciaCointestatario(int numeroConto, int idCointestatario) {
+        //Recupero il conto corrente
+        Contocorrente conto = contocorrenteDAO.findById(numeroConto)
+                .orElseThrow(() -> new RuntimeException("Contocorrente non esistente"));
+
+        //Verifico se il cointestatario ha effettuato movimenti
+        List<Integer> utentiMovimenti = movimentoDAO.findUtentiByIdcontocorrente(numeroConto);
+        if (utentiMovimenti.contains(idCointestatario)) {
+            throw new RuntimeException("Il cointestatario ha effettuato movimenti sul conto e non può essere sganciato");
+        }
+
+        //Sgancio il cointestatario se non ha effettuato movimenti
+		if (conto.getCoIntestatario() != null && conto.getCoIntestatario().getIdUtente() == idCointestatario) {
+			conto.setCoIntestatario(null);
+			contocorrenteDAO.save(conto);
+		} else {
+			throw new RuntimeException("L'utente specificato non è il cointestatario o è già stato sganciato");
+		}
+
+		//DTO con le informazioni aggiornate del conto
+		ContoCorrMovDTO contoCorrMovDTO = new ContoCorrMovDTO(conto.getNumeroConto(), conto.getMovimenti(), conto.getSaldo());
+
+    	return contoCorrMovDTO;
+    }
+
+	@Override
+	public ContoCorrMovDTO leggiDatiSalientiConto(Integer numeroConto) {
+		Contocorrente conto = contocorrenteDAO.findById(numeroConto)
+				.orElseThrow(() -> new RuntimeException("Contocorrente non esistente!!"));
+		
+		ContoCorrMovDTO contoDTO=new ContoCorrMovDTO(conto.getNumeroConto(),conto.getMovimenti(),conto.getSaldo());
+		
+		return contoDTO;
+	}
+
+
+	@Override
+	public ReportDTO report() {
+		List<Contocorrente> conti=contocorrenteDAO.findAll();
+		ReportDTO report=new ReportDTO(contocorrenteDAO.getPatrimonioBanca());
+		
+		for(int i=0;i<conti.size();i++) {
+			ContocorrenteReportDTO contoReport=new ContocorrenteReportDTO(conti.get(i).getNumeroConto(),conti.get(i).getSaldo(),
+					conti.get(i).getProprietario().getNome(),conti.get(i).getProprietario().getCognome(),movimentoDAO.sommaMovimenti(conti.get(i).getNumeroConto()));
+			report.addConti(contoReport);
+		}
+		
+		
+		return report;
 	}
 
 

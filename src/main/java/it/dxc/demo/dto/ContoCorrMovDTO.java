@@ -26,8 +26,6 @@ public class ContoCorrMovDTO {
 		return numeroConto;
 	}
 
-
-
 	public void setNumeroConto(int numeroConto) {
 		this.numeroConto = numeroConto;
 	}
