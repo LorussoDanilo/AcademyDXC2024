@@ -87,5 +87,6 @@ public class ContocorrenteController {
 	public ContoCorrMovDTO sganciaCo(@RequestParam Integer idCointestatario,@RequestParam Integer numeroConto) {
 		return serviceC.sganciaCointestatario(numeroConto,idCointestatario);
 	}
-
+	
+	
 }
